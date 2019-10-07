@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Label Sound</title>
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <input id="songInput" type="file" accept="audio/*">
+    <audio controls id="audioPlayer"></audio>
+    <textarea id="keyDetector">Click here to enable keyboard detection.</textarea>
+    <button id="renderButton" type="button">Generate csv</button>
+    <pre id="outputCsv"></pre>
+    <script type="text/javascript">
+      App.init();
+    </script>
+  </body>
+</html>

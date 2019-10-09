@@ -5,7 +5,6 @@ const App = {
     this.outputCsv = document.getElementById("outputCsv");
 
     const keyDetector = document.getElementById("keyDetector");
-    const renderButton = document.getElementById("renderButton");
     const songInput = document.getElementById("songInput");
 
     songInput.addEventListener("change", () => {
@@ -16,8 +15,6 @@ const App = {
     });
 
     keyDetector.addEventListener("keypress", e => this.onKeyPress(e));
-
-    renderButton.onclick = () => this.renderOutput();
   },
 
   onKeyPress: function(e) {
@@ -26,6 +23,8 @@ const App = {
       key: e.key
     });
     e.preventDefault();
+
+    window.requestAnimationFrame(() => this.renderOutput());
   },
 
   renderOutput: function() {

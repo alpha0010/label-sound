@@ -9,6 +9,11 @@
     <input id="songInput" type="file" accept="audio/*">
     <audio controls id="audioPlayer"></audio>
     <textarea id="keyDetector">Click here to enable keyboard detection.</textarea>
+    <div>
+      <label for="mappedKeyCount">Mapped fields:</label>
+      <input id="mappedKeyCount" type="number" min="0" max="32" value="0">
+      <div id="keyMappings"></div>
+    </div>
     <pre id="outputCsv"></pre>
     <script type="text/javascript">
       App.init();

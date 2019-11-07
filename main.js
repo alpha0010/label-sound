@@ -2,6 +2,9 @@ const App = {
   init: function() {
     this.audioPlayer = document.getElementById("audioPlayer");
     this.eventData = [];
+    this.lastNumberTakingEvent = null;
+    this.numberTakingEvents = new Set();
+    this.numbers = new Set("0123456789");
     this.keyMap = [];
     this.outputCsv = document.getElementById("outputCsv");
 
@@ -23,10 +26,18 @@ const App = {
   },
 
   onKeyPress: function(e) {
-    this.eventData.push({
-      currentTime: this.audioPlayer.currentTime,
-      key: e.key
-    });
+    if (this.numbers.has(e.key) && this.lastNumberTakingEvent !== null) {
+      this.eventData[this.lastNumberTakingEvent].value = e.key;
+    } else {
+      if (this.numberTakingEvents.has(e.key)) {
+        this.lastNumberTakingEvent = this.eventData.length;
+      }
+      this.eventData.push({
+        currentTime: this.audioPlayer.currentTime,
+        key: e.key,
+        value: null
+      });
+    }
     e.preventDefault();
 
     window.requestAnimationFrame(() => this.renderOutput());
@@ -74,6 +85,11 @@ const App = {
       keyInput.setAttribute("value", this.keyMap[i].key);
       keyInput.addEventListener("change", e => {
         this.keyMap[i].key = e.target.value;
+        if (this.keyMap[i].takesNumber) {
+          this.numberTakingEvents.add(this.keyMap[i].key);
+        } else {
+          this.numberTakingEvents.delete(this.keyMap[i].key);
+        }
       });
       mappingDiv.appendChild(keyInput);
 
@@ -85,6 +101,11 @@ const App = {
       }
       takesNumberInput.addEventListener("change", e => {
         this.keyMap[i].takesNumber = e.target.checked;
+        if (this.keyMap[i].takesNumber) {
+          this.numberTakingEvents.add(this.keyMap[i].key);
+        } else {
+          this.numberTakingEvents.delete(this.keyMap[i].key);
+        }
       });
       const takesNumberLabel = document.createElement("label");
       takesNumberLabel.setAttribute("for", "chkNumberInput" + i);
@@ -135,9 +156,9 @@ const App = {
 
       let cell = row.get(point.key);
       if (cell == null) {
-        cell = "";
+        cell = [];
       }
-      cell += point.key;
+      cell.push(point.value == null ? point.key : point.value);
       row.set(point.key, cell);
 
       header.add(point.key);
@@ -155,7 +176,7 @@ const App = {
         [curBucket]
           .concat(
             Array.from(header.values()).map(cell =>
-              row.has(cell) ? row.get(cell) : ""
+              row.has(cell) ? row.get(cell).join(" ") : ""
             )
           )
           .join(",")

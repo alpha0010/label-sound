@@ -96,11 +96,35 @@ const App = {
     }
   },
 
+  renderHeader: function(columns) {
+    const allColumns = ["time"];
+    let mappingIdx = 0;
+    for (let column of columns) {
+      while (mappingIdx < this.keyMap.length) {
+        const mapping = this.keyMap[mappingIdx];
+        ++mappingIdx;
+        if (column === mapping.key && mapping.label.length > 0) {
+          column = mapping.label;
+          break;
+        }
+      }
+      allColumns.push(column);
+    }
+    return allColumns.join(",");
+  },
+
   renderOutput: function() {
     const interval = 10;
     const rows = new Map();
     const header = new Set();
     let maxBucket = 0;
+
+    for (const mapping of this.keyMap) {
+      if (mapping.label.length > 0 && mapping.key.length > 0) {
+        header.add(mapping.key);
+      }
+    }
+
     for (const point of this.eventData) {
       let bucket = Math.floor(point.currentTime / interval) * interval;
       maxBucket = Math.max(bucket, maxBucket);
@@ -121,7 +145,7 @@ const App = {
     }
 
     const output = [];
-    output.push(["time"].concat(Array.from(header.values())).join(","));
+    output.push(this.renderHeader(header.values()));
     for (let curBucket = 0; curBucket <= maxBucket; curBucket += interval) {
       let row = rows.get(curBucket);
       if (row == null) {
